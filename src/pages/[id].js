@@ -31,6 +31,27 @@ const UserProfile = () => {
       setLoading(false);
     });
   }
+  function createVCard(contact) {
+    const vCard = `BEGIN:VCARD
+VERSION:4.0
+FN:${contact.name} 
+EMAIL:${contact.email}
+TEL:${contact.phone}
+END:VCARD`;
+
+    const blob = new Blob([vCard], { type: "text/vcard" });
+    const url = URL.createObjectURL(blob);
+
+    // Create a link and simulate a click to download the vCard
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${contact.name}.vcf`;
+    document.body.appendChild(link);
+    link.click();
+
+    // Clean up the URL object
+    URL.revokeObjectURL(url);
+  }
   useEffect(() => {
     if (id) fetchUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,6 +110,7 @@ const UserProfile = () => {
           {view && (
             <div className={styles.user_profile_email}>{user?.email}</div>
           )}
+          <button className="button-vcard" onClick={() => createVCard(user)}>Save Contact</button>
 
           <div className={styles.user_profile_social_icons}>
             {/* {user?.twitter && (
@@ -149,10 +171,7 @@ const UserProfile = () => {
             )}
           </div>
         </div>
-        <div
-          className={styles.users_button}
-          onClick={() => router.push("/")}
-        >
+        <div className={styles.users_button} onClick={() => router.push("/")}>
           View All Users
         </div>
       </div>
